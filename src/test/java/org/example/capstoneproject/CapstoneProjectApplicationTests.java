@@ -1,10 +1,10 @@
-package com.epam.learning.landon.devapps;
+package org.example.capstoneproject;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DevAppsApplicationTests {
+class CapstoneProjectApplicationTests {
 
     @Test
     void contextLoads() {
