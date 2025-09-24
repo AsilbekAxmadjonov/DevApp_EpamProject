@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    private final Validation validation;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -35,15 +36,29 @@ public class AuthenticationService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
+
+
+        if(validation.validateEmail(request.getEmail())){
+            user.setEmail(request.getEmail());
+        }else{
+            throw new IllegalArgumentException("Invalid email format. Example: user@example.com");
+        }
+
+        if(validation.validatePhoneNumber(request.getPhone())){
+            user.setPhone(request.getPhone());
+        }else{
+            throw new IllegalArgumentException(("Invalid phone format. example: +998901760112"));
+        }
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
 
         User savedUser = userRepository.save(user);
 
         UserDetails userDetails = userService.loadUserByUsername(savedUser.getUsername());
         String jwtToken = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(jwtToken, savedUser.getId(), savedUser.getUsername(),
+        return new AuthResponse(jwtToken,user.getFirstName(), user.getLastName(), savedUser.getId(), savedUser.getUsername(),
                 savedUser.getEmail());
     }
 
@@ -61,7 +76,7 @@ public class AuthenticationService {
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
         String jwtToken = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(jwtToken, user.getId(), user.getUsername(),
+        return new AuthResponse(jwtToken,  user.getFirstName(), user.getLastName(),user.getId(), user.getUsername(),
                 user.getEmail());
     }
 }

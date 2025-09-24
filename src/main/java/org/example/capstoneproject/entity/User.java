@@ -4,8 +4,12 @@ package org.example.capstoneproject.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -18,7 +22,13 @@ public class User {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "first_name", length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", length = 100)
+    private String lastName;
+
+    @Column(name = "username", nullable = false, length = 100)
     private String username;
 
     @Column(name = "password", nullable = false)
@@ -27,7 +37,15 @@ public class User {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "phone", length = 20)
+    @Column(name = "phone", length = 13)
     private String phone;
+
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user")
+    List<Post> posts = new ArrayList<>();
+
 
 }

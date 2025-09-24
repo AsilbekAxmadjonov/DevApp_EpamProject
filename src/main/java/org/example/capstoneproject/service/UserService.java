@@ -18,6 +18,7 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final Validation validation;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -28,6 +29,18 @@ public class UserService implements UserDetailsService {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .build();
+    }
+
+    public UserResponse getUserbyFirstName(String firstName){
+        User user = userRepository.findByFirstName(firstName)
+                .orElseThrow(() -> new RuntimeException("User not found with firstName: " + firstName));
+        return mapToUserResponse(user);
+    }
+
+    public UserResponse getUserbyLastName(String lastName){
+        User user = userRepository.findByFirstName(lastName)
+                .orElseThrow(() -> new RuntimeException("User not found with lastname: " + lastName));
+        return mapToUserResponse(user);
     }
 
     public UserResponse getUserById(Integer id) {
@@ -48,9 +61,43 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
+    public UserResponse updateUserDetails(Integer id, User request){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getUsername() != null) user.setUsername(request.getUsername());
+        if (request.getPassword() != null) user.setPassword(request.getPassword());
+
+        if (request.getEmail() != null  ){
+            if(validation.validateEmail(request.getEmail())){
+                user.setEmail(request.getEmail());
+            }else{
+                throw new IllegalArgumentException("Invalid email format. Example: user@example.com");
+            }
+        }
+
+        if (request.getPhone() != null) {
+            if (validation.validatePhoneNumber(request.getPhone())) {
+                user.setPhone(request.getPhone());
+            } else {
+                throw new IllegalArgumentException("Invalid phone format. Example: +998901760112");
+            }
+        }
+
+        User saved = userRepository.save(user);
+
+        return mapToUserResponse(saved);
+    }
+
+
+
     private UserResponse mapToUserResponse(User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
