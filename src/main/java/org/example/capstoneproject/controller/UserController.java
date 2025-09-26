@@ -13,14 +13,19 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    // Update user details
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUserDetails(
             @PathVariable Integer id,
-            @RequestBody User request){
-
+            @RequestBody User request) {
         UserResponse updated = userService.updateUserDetails(id, request);
-
         return ResponseEntity.ok(updated);
     }
 
+    // Fetch user by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
+        UserResponse user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
 }

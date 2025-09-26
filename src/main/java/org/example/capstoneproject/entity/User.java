@@ -40,6 +40,11 @@ public class User {
     @Column(name = "phone", length = 13)
     private String phone;
 
+    @Lob
+    private byte[] profilePhoto; // optional, can be null
+
+    private String bio;
+
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

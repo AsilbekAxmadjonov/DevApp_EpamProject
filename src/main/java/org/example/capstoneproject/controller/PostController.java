@@ -1,5 +1,6 @@
 package org.example.capstoneproject.controller;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.capstoneproject.dto.request.PostRequest;
@@ -33,14 +34,14 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Integer id) {
         PostResponse post = postService.getPostById(id);
         return ResponseEntity.ok(post);
     }
 
     @PutMapping("/{id}")
     ResponseEntity<PostResponse> updatePost(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @RequestBody PostRequest request
     ) {
         PostResponse updated = postService.updatePost(id, request.getContent());

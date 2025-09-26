@@ -1,5 +1,6 @@
 package org.example.capstoneproject.service;
 
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.example.capstoneproject.dto.response.UserResponse;
 import org.example.capstoneproject.entity.User;
@@ -9,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,7 +64,7 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
-    public UserResponse updateUserDetails(Integer id, User request){
+    public UserResponse updateUserDetails(Integer id, User request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -69,6 +72,10 @@ public class UserService implements UserDetailsService {
         if (request.getLastName() != null) user.setLastName(request.getLastName());
         if (request.getUsername() != null) user.setUsername(request.getUsername());
         if (request.getPassword() != null) user.setPassword(request.getPassword());
+        if (request.getBio() != null) user.setBio(request.getBio());
+        if (request.getProfilePhoto() != null && request.getProfilePhoto().length > 0) {
+            user.setProfilePhoto(request.getProfilePhoto()); // already byte[]
+        }
 
         if (request.getEmail() != null  ){
             if(validation.validateEmail(request.getEmail())){
@@ -86,6 +93,7 @@ public class UserService implements UserDetailsService {
             }
         }
 
+
         User saved = userRepository.save(user);
 
         return mapToUserResponse(saved);
@@ -101,6 +109,12 @@ public class UserService implements UserDetailsService {
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
+        response.setBio(user.getBio());
+        if (user.getProfilePhoto() != null && user.getProfilePhoto().length > 0) {
+            response.setProfilePhoto(Base64.getEncoder().encodeToString(user.getProfilePhoto()));
+        } else {
+            response.setProfilePhoto(null); // or leave empty
+        }
         return response;
     }
     public User getUserEntityByEmail(String email) {

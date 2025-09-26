@@ -60,7 +60,7 @@ public class PostService {
     }
 
 
-    public PostResponse getPostById(Long id) {
+    public PostResponse getPostById(Integer id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -74,7 +74,7 @@ public class PostService {
         );
     }
 
-    public PostResponse updatePost(Long id, String newContent) {
+    public PostResponse updatePost(Integer id, String newContent) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
