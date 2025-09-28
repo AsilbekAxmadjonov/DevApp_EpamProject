@@ -52,5 +52,4 @@ public class PostController {
     ResponseEntity<?> getAllPostsByUserId(@RequestParam(value = "id",required = true) Integer userId){
         return postService.getAllPostsByUserId(userId);
     }
-
 }
